@@ -46,7 +46,9 @@ def get_file_list(file_dir):
 	file_list=[]
 	add_files(file_list, file_dir, "blocks", 'blk*.dat')
 	add_files(file_list, file_dir, "blocks", 'rev*.dat')
+	add_files(file_list, file_dir, "blocks", 'index')
 	add_files(file_list, file_dir, "chainstate", '*.ldb')
+	add_files(file_list, file_dir, "assets", '*.ldb')
 	return(file_list)
 
 def add_files(list, dir, subfolder, spec):
@@ -103,3 +105,4 @@ info['ipfs_hash'] = add_to_ipfs(zip_full_path)
 os.remove(zip_full_path)
 info['url'] = 'https://cloudflare-ipfs.com/ipfs/' + info['ipfs_hash']
 write_metadata(info)
+
