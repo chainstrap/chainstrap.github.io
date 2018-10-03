@@ -28,7 +28,7 @@ else:
 	mode = "mainnet"
 
 if (platform.system() == "Darwin"):
-	datadir = os.path.expanduser("~/Library/Application Support/Raven/X/")
+	datadir = os.path.expanduser("~/Library/Application Support/Raven/")
 if (platform.system() == "Linux"):
 	datadir = os.path.expanduser("~/.raven/")
 if (platform.system() == "Windows"):
@@ -74,7 +74,7 @@ def extract_zip_file(directory_to_extract_to, path_to_zip_file):
 chaindata = get_metadata(chain, mode)
 print(chaindata)
 if chaindata['mode'] == 'testnet':
-	datadir += 'testnet6' + os.sep
+	datadir += 'testnet6' + os.sep   #Very RVN specific
 get_from_ipfs(chaindata['ipfs_hash'])
 print("Extracting " + chain + ' data to ' + datadir)
 extract_zip_file(datadir, chaindata['ipfs_hash'])
