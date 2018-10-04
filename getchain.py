@@ -78,8 +78,5 @@ if chaindata['mode'] == 'testnet':
 get_from_ipfs(chaindata['ipfs_hash'])
 print("Extracting " + chain + ' data to ' + datadir)
 extract_zip_file(datadir, chaindata['ipfs_hash'])
-print(chaindata['ipfs_hash'])
-print(len(chaindata['ipfs_hash']))
-print(chaindata['ipfs_hash'][0:2])
 if (chaindata['ipfs_hash'][0:2] == 'Qm' and len(chaindata['ipfs_hash']) == 46):
 	os.remove(chaindata['ipfs_hash'])

@@ -42,13 +42,17 @@ def getblockchaininfo():
     result = rpc_connection.getblockchaininfo()
     return(result)
 
+def stop():
+    result = rpc_connection.stop()
+    return(result)
+
 def get_file_list(file_dir):
 	file_list=[]
 	add_files(file_list, file_dir, "blocks", 'blk*.dat')
 	add_files(file_list, file_dir, "blocks", 'rev*.dat')
 	add_files(file_list, file_dir, "blocks", 'index')
-	add_files(file_list, file_dir, "chainstate", '*.ldb')
-	add_files(file_list, file_dir, "assets", '*.ldb')
+	add_files(file_list, file_dir, "chainstate", '*')
+	add_files(file_list, file_dir, "assets", '*')
 	return(file_list)
 
 def add_files(list, dir, subfolder, spec):
@@ -95,6 +99,7 @@ except:
 	print("Make sure " + chain + " is running on " + mode)
 	exit(-1)
 
+stop()
 print(info)
 file_list = get_file_list(datadir)
 print(file_list)
