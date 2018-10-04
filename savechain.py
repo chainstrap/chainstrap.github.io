@@ -50,6 +50,7 @@ def stop():
 def get_file_list(file_dir):
 	file_list=[]
 	add_files(file_list, file_dir, "blocks", '*')
+	add_files(file_list, file_dir, "blocks/index", '*')
 	add_files(file_list, file_dir, "chainstate", '*')
 	add_files(file_list, file_dir, "assets", '*')
 	return(file_list)
