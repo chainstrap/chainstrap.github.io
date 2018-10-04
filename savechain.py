@@ -6,6 +6,7 @@ import os
 import json
 import zipfile
 import glob
+import time
 
 chain = "RVN"
 #default is mainnet
@@ -100,6 +101,9 @@ except:
 	exit(-1)
 
 stop()
+sleep_seconds = 20
+print("Sleep for " + str(sleep_seconds) + " to let client stop.")
+time.sleep(sleep_seconds)
 print(info)
 file_list = get_file_list(datadir)
 print(file_list)
