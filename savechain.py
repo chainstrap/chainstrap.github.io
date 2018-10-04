@@ -66,7 +66,7 @@ def write_metadata(info):
 	obj['url'] = info['url']
 	obj['chain'] = chain
 	obj['mode'] = mode
-	fp = open(script_dir + chain + '-' + mode + ".json", "w")
+	fp = open(script_dir + os.sep + chain + os.sep + chain + '-' + mode + ".json", "w")
 	json.dump(obj, fp, indent=2)
 	fp.close()
 
