@@ -6,6 +6,14 @@ import os
 import zipfile
 import platform
 try:
+	import ipfsapi
+except ImportError:
+	print("Requires ipfsapi")
+	print("pip install ipfs")
+	exit(-1)
+
+
+try:
     # For Python 3.0 and later
     from urllib.request import urlopen
 except ImportError:
@@ -33,7 +41,7 @@ if (platform.system() == "Linux"):
 	datadir = os.path.expanduser("~/.raven/")
 if (platform.system() == "Windows"):
 	datadir = path.expandvars(r'%APPDATA%')
-	datadir += os.sep + Raven + os.sep
+	datadir += os.sep + 'Raven' + os.sep
 
 print(datadir)
 # current directory
@@ -56,7 +64,6 @@ def get_metadata(coin, mode):
 
 def get_from_ipfs(hash):
     print('Getting ' + hash + ' from IPFS...')
-    import ipfsapi
     try:
     	api = ipfsapi.connect('127.0.0.1', 5001)
     except:
