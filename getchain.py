@@ -21,6 +21,7 @@ except ImportError:
     from urllib2 import urlopen
 import json
 
+domain = 'https://chainstrap.github.io/'
 
 if (len(sys.argv) >= 2):
 	chain = sys.argv[1]
@@ -59,7 +60,7 @@ def get_jsonparsed_data(url):
     return json.loads(data)
 
 def get_metadata(coin, mode):
-	return(get_jsonparsed_data('https://chainstrap.github.io/' + coin + '/' + coin + '-' + mode + '.json' ))
+	return(get_jsonparsed_data(domain + coin + '/' + coin + '-' + mode + '.json' ))
 
 
 def get_from_ipfs(hash):

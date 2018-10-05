@@ -1,0 +1,12 @@
+{
+	"chain" : "RVN",
+	"mainnet_rpc_port" : 8766,
+	"testnet_rpc_port" : 18766,
+	"testnet_dir" : "testnet6",
+	"subdir" : "raven",
+	"win_dir" : "%USERDIR%",
+	"mac_dir" : "%USERDIR%/Library/Application Support",
+	"lin_dir" : "%USERDIR%",
+	"rpc_user" : "rpcuser",
+	"rpc_user" : "rpcpass555"
+}
