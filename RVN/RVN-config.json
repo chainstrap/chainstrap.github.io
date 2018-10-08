@@ -1,5 +1,11 @@
 {
 	"chain" : "RVN",
+	"folders" : {
+					"assets":"*", 
+					"blocks":"*",
+				 	"blocks/index":"*",
+				 	"chainstate":"*"
+				},
 	"mainnet_rpc_port" : 8766,
 	"testnet_rpc_port" : 18766,
 	"testnet_dir" : "testnet6",
