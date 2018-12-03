@@ -1,8 +1,8 @@
 {
-  "ipfs_hash": "QmaUXzUJXjZfTQo1v79xHZ5L9VV3S5tbyCw3hNhwKmTUnT", 
-  "blockhash": "000000000000a6829b20dbaa50fa0082b9b6df5a482f561dc69d28074b3f23d1", 
-  "chain": "RVN", 
-  "url": "https://cloudflare-ipfs.com/ipfs/QmaUXzUJXjZfTQo1v79xHZ5L9VV3S5tbyCw3hNhwKmTUnT", 
-  "mode": "mainnet", 
-  "blocks": 390080
+  "blocks": 475971,
+  "blockhash": "0000000000000ded2164786134a22d10983a3979b0655f8cdb5be2334e56ff21",
+  "ipfs_hash": "QmT8zVvKDtH1gmweHR6Pe1MZUV2r3kX8XbgkBkW2v9UUgJ",
+  "url": "https://cloudflare-ipfs.com/ipfs/QmT8zVvKDtH1gmweHR6Pe1MZUV2r3kX8XbgkBkW2v9UUgJ",
+  "chain": "RVN",
+  "mode": "mainnet"
 }

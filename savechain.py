@@ -8,11 +8,19 @@ import zipfile
 import glob
 import time
 
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
+
 chain = "RVN"
 #default is mainnet
 rpc_port = 8766
 datadir = '/Users/tron/Library/Application Support/Raven/'
 mode = 'mainnet'
+domain = 'https://chainstrap.github.io/'
 
 if (len(sys.argv) == 2):
 	if (sys.argv[1] == 'testnet'):
@@ -46,6 +54,11 @@ def getblockchaininfo():
 def stop():
     result = rpc_connection.stop()
     return(result)
+
+def get_jsonparsed_data(url):
+    response = urlopen(url)
+    data = response.read().decode("utf-8")
+    return json.loads(data)
 
 def get_file_list(file_dir):
 	file_list=[]
@@ -82,6 +95,9 @@ def add_to_ipfs(file):
     print(res)
     return(res['Hash'])
 
+def get_chain_config(coin):
+	return(get_jsonparsed_data(domain + coin + '/' + coin + '-config.json' ))
+
 def create_zip(chain, file_dir, file_list):
     os.chdir(file_dir)
     zip_name = script_dir + '{0}.zip'.format(chain)
@@ -98,6 +114,8 @@ try:
 except:
 	print("Make sure " + chain + " is running on " + mode)
 	exit(-1)
+
+chain_config = get_chain_config(chain)
 
 stop()
 sleep_seconds = 20
