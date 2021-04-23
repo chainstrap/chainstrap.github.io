@@ -16,4 +16,6 @@ This will work for any number of blockchains.  It is set up to be driven from a 
 ### IPFS
 The data is stored on IPFS, so it requires that someone hold the data.  It takes advantage of the nature of IPFS for storing many copies for optimization of delivery.  It also relies on IPFS for its immutability of the data from its Content Id (hash).
 
+### Cross-platform
+It uses Python which can be run on Windows, Linux, and Mac.  Python will need to be installed on Windows.  https://www.python.org/downloads/windows/
 
