@@ -43,6 +43,10 @@ python3 getchain.py RVN
 
 
 ## Usage to Save a Chain
+Prerequisites:
+* A fully synced chain.
+* A running RVN node (ravend or Raven-QT with -server)
+* IPFS running as a daemon (```ipfs daemon``` or IPFS desktop)
 ```
 git clone https://github.com/chainstrap/chainstrap.github.io.git
 pip install -r requirements.txt
