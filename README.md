@@ -19,3 +19,36 @@ The data is stored on IPFS, so it requires that someone hold the data.  It takes
 ### Cross-platform
 It uses Python which can be run on Windows, Linux, and Mac.  Python will need to be installed on Windows.  https://www.python.org/downloads/windows/
 
+## Usage
+
+### Linux
+```
+git clone https://github.com/chainstrap/chainstrap.github.io.git
+./getchain.py RVN
+```
+
+### Mac
+```
+git clone https://github.com/chainstrap/chainstrap.github.io.git
+./getchain.py RVN
+```
+
+### Windows
+Install python3 from https://www.python.org/downloads/windows/  
+Install git from https://git-scm.com/download/win
+```
+git clone https://github.com/chainstrap/chainstrap.github.io.git
+python3 getchain.py RVN
+```
+
+
+## Usage to Save a Chain
+Prerequisites:
+* A fully synced chain.
+* A running RVN node (ravend or Raven-QT with -server)
+* IPFS running as a daemon (```ipfs daemon``` or IPFS desktop)
+```
+git clone https://github.com/chainstrap/chainstrap.github.io.git
+pip install -r requirements.txt
+./savechain.py RVN
+```
