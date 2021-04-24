@@ -19,3 +19,24 @@ The data is stored on IPFS, so it requires that someone hold the data.  It takes
 ### Cross-platform
 It uses Python which can be run on Windows, Linux, and Mac.  Python will need to be installed on Windows.  https://www.python.org/downloads/windows/
 
+## Usage
+
+### Linux
+```
+git clone ...
+./getchain.py RVN
+```
+
+### Mac
+```
+git clone ...
+./getchain.py RVN
+```
+
+### Windows
+Install python3 from https://www.python.org/downloads/windows/
+Install git from https://git-scm.com/download/win
+```
+git clone ...
+python3 getchain.py RVN
+```
