@@ -23,13 +23,13 @@ It uses Python which can be run on Windows, Linux, and Mac.  Python will need to
 
 ### Linux
 ```
-git clone ...
+git clone https://github.com/chainstrap/chainstrap.github.io.git
 ./getchain.py RVN
 ```
 
 ### Mac
 ```
-git clone ...
+git clone https://github.com/chainstrap/chainstrap.github.io.git
 ./getchain.py RVN
 ```
 
@@ -37,6 +37,6 @@ git clone ...
 Install python3 from https://www.python.org/downloads/windows/
 Install git from https://git-scm.com/download/win
 ```
-git clone ...
+git clone https://github.com/chainstrap/chainstrap.github.io.git
 python3 getchain.py RVN
 ```
