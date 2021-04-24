@@ -34,7 +34,7 @@ git clone https://github.com/chainstrap/chainstrap.github.io.git
 ```
 
 ### Windows
-Install python3 from https://www.python.org/downloads/windows/ 
+Install python3 from https://www.python.org/downloads/windows/  
 Install git from https://git-scm.com/download/win
 ```
 git clone https://github.com/chainstrap/chainstrap.github.io.git
