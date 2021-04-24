@@ -40,3 +40,11 @@ Install git from https://git-scm.com/download/win
 git clone https://github.com/chainstrap/chainstrap.github.io.git
 python3 getchain.py RVN
 ```
+
+
+## Usage to Save a Chain
+```
+git clone https://github.com/chainstrap/chainstrap.github.io.git
+pip install -r requirements.txt
+./savechain.py RVN
+```
