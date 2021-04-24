@@ -24,6 +24,9 @@ It uses Python which can be run on Windows, Linux, and Mac.  Python will need to
 ### Linux
 ```
 git clone https://github.com/chainstrap/chainstrap.github.io.git
+cd chainstrap.github.io
+apt install python3-pip
+pip3 install -r requirements.txt
 ./getchain.py RVN
 ```
 
