@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-domain = 'https://chainstrap.github.io/'
+domain = 'https://chainstrap.com/'
 
 import sys
 from os.path import basename 
@@ -8,11 +8,13 @@ from os import path
 import os
 import zipfile
 import platform
+import datetime
+from urllib.request import urlopen, Request
 try:
-	import ipfsapi
+	import ipfshttpclient
 except ImportError:
-	print("Requires ipfsapi")
-	print("pip install ipfs")
+	print("Requires ipfshttpclient")
+	print("pip install ipfshttpclient")
 	exit(-1)
 
 try:
@@ -53,8 +55,10 @@ def get_datadir(config, mode):
 #script_dir = path.dirname(path.abspath(__file__)) + os.sep
 
 def get_jsonparsed_data(url):
-    response = urlopen(url)
-    data = response.read().decode("utf-8")
+    print("Getting: " + url)
+    r = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    data = urlopen(r).read().decode("utf-8")
+    #data = response.read()  #
     return json.loads(data)
 
 def get_metadata(coin, mode):
@@ -63,15 +67,21 @@ def get_metadata(coin, mode):
 def get_chain_config(coin):
 	return(get_jsonparsed_data(domain + coin + '/' + coin + '-config.json' ))
 
+def print_time():
+    ct = datetime.datetime.now()
+    print("Time: ", ct)
+
 def get_from_ipfs(hash):
     print('Getting ' + hash + ' from IPFS...')
     try:
-    	api = ipfsapi.connect('127.0.0.1', 5001)
+        client = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')  # Connects to: /dns/localhost/tcp/5001/http
+
+    	#api = ipfsapi.connect('127.0.0.1', 5001)
     except:
     	print("Error getting from ipfs.  Make sure you run")
     	print("  ipfs daemon")
     	exit(-1)
-    return(api.get(hash))
+    return(client.get(hash))
 
 def extract_zip_file(directory_to_extract_to, path_to_zip_file):
 	import zipfile
@@ -97,8 +107,12 @@ datadir = get_datadir(chain_config, mode)
 chaindata = get_metadata(chain, mode)
 print(chaindata)
 
-get_from_ipfs(chaindata['ipfs_hash'])
-print("Extracting " + chain + ' data to ' + datadir)
-extract_zip_file(datadir, chaindata['ipfs_hash'])
-if (chaindata['ipfs_hash'][0:2] == 'Qm' and len(chaindata['ipfs_hash']) == 46):
-	os.remove(chaindata['ipfs_hash'])
+for ipfshash in chaindata['ipfs_hashes']:
+    print_time()
+    get_from_ipfs(ipfshash)
+    print_time()
+    print("Extracting " + chain + ' data to ' + datadir)
+    extract_zip_file(datadir, ipfshash)
+    print_time()
+    if (ipfshash[0:2] == 'Qm' and len(ipfshash) == 46):
+	    os.remove(ipfshash)
