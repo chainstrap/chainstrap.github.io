@@ -83,6 +83,11 @@ def get_from_ipfs(hash):
     	exit(-1)
     return(client.get(hash))
 
+def wget_from_ipfs(baseurl, ipfshash):
+    import wget
+    print("wget: " + baseurl+ipfshash)
+    wget.download(baseurl+ipfshash, ipfshash) 
+
 def extract_zip_file(directory_to_extract_to, path_to_zip_file):
 	import zipfile
 	zip_ref = zipfile.ZipFile(path_to_zip_file, 'r')
@@ -109,7 +114,7 @@ print(chaindata)
 
 for ipfshash in chaindata['ipfs_hashes']:
     print_time()
-    get_from_ipfs(ipfshash)
+    wget_from_ipfs(chaindata['baseurl'], ipfshash)
     print_time()
     print("Extracting " + chain + ' data to ' + datadir)
     extract_zip_file(datadir, ipfshash)
