@@ -52,6 +52,6 @@ Prerequisites:
 * IPFS running as a daemon (```ipfs daemon``` or IPFS desktop)
 ```
 git clone https://github.com/chainstrap/chainstrap.github.io.git
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ./savechain.py RVN
 ```
