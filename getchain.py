@@ -73,14 +73,14 @@ def print_time():
 
 def get_from_ipfs(hash):
     print('Getting ' + hash + ' from IPFS...')
-    try:
-        client = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')  # Connects to: /dns/localhost/tcp/5001/http
+    #try:
+    client = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')  # Connects to: /dns/localhost/tcp/5001/http
 
     	#api = ipfsapi.connect('127.0.0.1', 5001)
-    except:
-    	print("Error getting from ipfs.  Make sure you run")
-    	print("  ipfs daemon")
-    	exit(-1)
+    #except:
+    #	print("Error getting from ipfs.  Make sure you run")
+    #	print("  ipfs daemon")
+    #	exit(-1)
     return(client.get(hash))
 
 def wget_from_ipfs(baseurl, ipfshash):
