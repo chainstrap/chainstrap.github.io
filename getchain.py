@@ -114,7 +114,8 @@ print(chaindata)
 
 for ipfshash in chaindata['ipfs_hashes']:
     print_time()
-    get_from_ipfs(chaindata['baseurl'], ipfshash)
+    #wget_from_ipfs(chaindata['baseurl'], ipfshash)
+    get_from_ipfs(ipfshash)
     print_time()
     print("Extracting " + chain + ' data to ' + datadir)
     extract_zip_file(datadir, ipfshash)
