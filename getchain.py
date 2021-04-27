@@ -73,14 +73,18 @@ def print_time():
 
 def get_from_ipfs(hash):
     print('Getting ' + hash + ' from IPFS...')
-    #try:
-    client = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')  # Connects to: /dns/localhost/tcp/5001/http
+    try:
+        client = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')  # Connects to: /dns/localhost/tcp/5001/http
 
     	#api = ipfsapi.connect('127.0.0.1', 5001)
-    #except:
-    #	print("Error getting from ipfs.  Make sure you run")
-    #	print("  ipfs daemon")
-    #	exit(-1)
+    except VersionMismatch:
+    	print("Version mismatch with ipfs")
+    	print("Unexpected error:", sys.exc_info()[0])
+    except:
+    	print("Unexpected error:", sys.exc_info()[0])
+    	print("Error getting from ipfs.  Make sure you run")
+    	print("  ipfs daemon")
+    	exit(-1)
     return(client.get(hash))
 
 def wget_from_ipfs(baseurl, ipfshash):
@@ -111,6 +115,15 @@ chain_config = get_chain_config(chain)
 datadir = get_datadir(chain_config, mode)
 chaindata = get_metadata(chain, mode)
 print(chaindata)
+
+print("Downloading this files via IPFS client for reliability.")
+for ipfshash in chaindata['ipfs_hashes']:
+	print(chaindata['baseurl']+ipfshash)
+
+print("This can take a long time per file.  Most about 2GB in size.")
+print("To make sure it is still going, look at the file size grow in the same folder as getchain.py.")
+print("Files will be extracted after download to: " + datadir)
+
 
 for ipfshash in chaindata['ipfs_hashes']:
     print_time()
