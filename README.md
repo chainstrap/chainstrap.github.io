@@ -8,7 +8,7 @@ The purpose of this infrastructure is to provide a cross-platform way to downloa
 This solution simply gives a new user the opportunity to quickly download compressed blockchain data and put it in the right location.  If the user wishes, they can -reindex to scan the entire chain.
 
 ### Trust
-Trust required?  Yes, running this requires trust that the code will not take or replace the wallet.dat.  The code is very simple, and easy to analyze.
+Trust required?  Yes, running this requires trust that the code will not take or replace the wallet.dat.  The python code is very simple, and easy to analyze.  Most core software can verify the blockchain from origin, so trust of the data isn't necessary.
 
 ### Multiple blockchains
 This will work for any number of blockchains.  It is set up to be driven from a config file for the location, and will work for testnet or mainnet on any Bitcoin-like chain.
