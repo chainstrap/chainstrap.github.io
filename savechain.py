@@ -5,6 +5,7 @@ from os import path
 import os
 import json
 import zipfile
+import platform
 import glob
 import time
 import datetime
