@@ -4,8 +4,8 @@
 # Add:
 # 4 0 * * * /root/chainstrap.github.io/scripts/daily_RVN.sh
 
-cd ~
-./savechain.sh RVN
+cd /root/chainstrap.github.io
+./savechain.py RVN
 git add RVN/RVN-mainnet.json
 git commit -m 'Update chain'
 git push
