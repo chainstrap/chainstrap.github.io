@@ -47,6 +47,12 @@ script_dir = path.dirname(path.abspath(__file__)) + os.sep
 rpc_user = 'rpcuser'
 rpc_pass = 'rpcpass555'
 
+#Add OS specific folder separator
+def add_sep(dir):
+	if (dir[-1] != os.sep):
+		dir = dir + os.sep
+	return(dir)
+	
 def get_datadir(config, mode):
 	userdir = os.path.expanduser('~')
 	if (platform.system() == "Darwin"):
