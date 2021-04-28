@@ -25,8 +25,8 @@ except ImportError:
 chain = "RVN"
 #default is mainnet
 rpc_port = 8766
-datadir = '/Users/tron/Library/Application Support/Raven/'
 mode = 'mainnet'
+datadir = '/Users/tron/Library/Application Support/Raven/'
 domain = 'https://chainstrap.com/'
 
 if (len(sys.argv) == 2):
@@ -45,6 +45,20 @@ script_dir = path.dirname(path.abspath(__file__)) + os.sep
 #Set this information in your raven.conf file (in datadir, not testnet3)
 rpc_user = 'rpcuser'
 rpc_pass = 'rpcpass555'
+
+def get_datadir(config, mode):
+	userdir = os.path.expanduser('~')
+	if (platform.system() == "Darwin"):
+		datadir = add_sep(config['mac_dir']) + add_sep(config['subdir']) 
+	if (platform.system() == "Linux"):
+		datadir = add_sep(config['lin_dir']) + '.' + add_sep(config['subdir'])
+	if (platform.system() == "Windows"):
+		userdir = path.expandvars(r'%APPDATA%')
+		datadir += config['lin_dir'] + add_sep(config['subdir'])
+	datadir = datadir.replace(R'%USERDIR%', userdir)
+	if mode == 'testnet':
+		datadir += add_sep(config['testnet_dir'])
+	return(datadir)
 
 def get_rpc_connection():
     from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
@@ -159,6 +173,7 @@ except:
 	#exit(-1)
 
 chain_config = get_chain_config(chain)
+datadir = get_datadir(chain_config, mode)
 
 try:
 	stop()
