@@ -10,7 +10,7 @@
 # * * * * * ipfs diag sys && wget --spider https://heartbeat.uptimerobot.com/m788009529-fe47d77c931ef22954680f9b630b562d5eacf038
 
 cd /root/chainstrap.github.io
-./savechain.py RVN >> savechain.log
+./savechain.py RVN &>> savechain.log
 git add RVN/RVN-mainnet.json
 git commit -m 'Update chain'
 git push
