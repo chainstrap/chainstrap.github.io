@@ -4,7 +4,7 @@
 # Add:
 
 # Runs this daily script 
-# 4 0 * * * /root/chainstrap.github.io/scripts/daily_RVN.sh >> /root/chainstrap.github.io/cron.out
+# 4 0 * * * /root/chainstrap.github.io/scripts/daily_RVN.sh &>> /root/chainstrap.github.io/cron.out
 
 #Checks to make sure ipfs is running and then provides heartbeat
 # * * * * * /snap/bin/ipfs diag sys && wget --spider https://heartbeat.uptimerobot.com/m788009529-fe47d77c931ef22954680f9b630b562d5eacf038
