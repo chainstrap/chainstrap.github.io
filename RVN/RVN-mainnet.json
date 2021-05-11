@@ -1,15 +1,15 @@
 {
-  "blocks": 1734316,
-  "blockhash": "00000000000036d2fe0369f91bb26f4a2c1caf0de331e1cb53d1533d195f7e61",
+  "blocks": 1747380,
+  "blockhash": "000000000000a894bf86b267974fa9ba82e86c776bda2769a982de75d498ff1c",
   "ipfs_hashes": [
-    "QmcJHHyW1RT9qnzLfrirPA1SeMhEnstbfVwPjg5YV8jYxm",
+    "QmWAJkwBGEwDUo1Tnqw5u1mM53hsE6uArCpzsovim5Gg8E",
     "QmTKd6bSX3zDQdFZgHtKib3wqRvFv2U99du4jjR1KQMb25",
     "QmTN6tkLwc5n7Xk7JUQkZyVDUdZsUJkey7E7P1EEKpoydH",
     "QmQcGUAk6au7SRmGRPd2eTjRcHk1ftLW6H64h67ocwTB2r",
     "QmdFuYMx42pzPvarWY9qR7Z7XA21ZkbvRQGL8QppzRExzG",
-    "QmQSvUsAFvqg9Z5EJGdJY1BycGpRHmvBSe6DZwWDqjW2aL",
-    "Qmcnqr1UJF1BXQd9z5xk9nPbagJuhFYnJbp3jXhQhTb7V2",
-    "QmYzy2DT8GAAkAecHxoLDuSdHTEZykW34UKDCm3ftEuqDH"
+    "QmT374GXJ8pPGrGefWfCczPjs5WddYX1KHNdybqpeTrjMf",
+    "QmPMZXnTo2aY3RtYusrfdVkKkn8DRMphgWwiTtRCQ2CTts",
+    "QmaioKEdcVJMypygofZ5YYUZbPfqV3zkZpn7dcPwfod2n8"
   ],
   "baseurl": "https://cloudflare-ipfs.com/ipfs/",
   "chain": "RVN",
