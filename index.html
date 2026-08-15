@@ -1,23 +1,1033 @@
-<title>ChainStrap</title>
-<h1>Welcome to ChainStrap.</h1>
-<font size=+1>
-<p />
-ChainStrap is a portmanteau of Bootstrap and Blockchain.
-<p />
-Get your blockchain up and running faster.
-<p />
-Download <a href='getchain.py'>getchain.py</a>
-<p />
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChainStrap — bootstrap a blockchain node from IPFS</title>
+<meta name="description" content="Download compressed blockchain snapshots over IPFS and get your node synced in hours instead of weeks. One Python script, any OS, no central server.">
+<meta name="color-scheme" content="dark">
+<meta property="og:title" content="ChainStrap">
+<meta property="og:description" content="Bootstrap a blockchain node from IPFS in hours, not weeks.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://chainstrap.com/chainstraplogo.jpg">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://chainstrap.com/chainstraplogo.jpg">
+<link rel="apple-touch-icon" href="chainstraplogo.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23ffffff'/%3E%3Cg fill='none' stroke='%230d2b5e' stroke-width='3.4' stroke-linejoin='round'%3E%3Cpath d='M16 4.5l5 2.9v5.8l-5 2.9-5-2.9V7.4z'/%3E%3Cpath d='M16 14.6l5 2.9v5.8l-5 2.9-5-2.9v-5.8z'/%3E%3C/g%3E%3Cpath d='M13.4 24.5h5.2v2.2h3.4L16 31.5l-6-4.8h3.4z' fill='%230d2b5e'/%3E%3C/svg%3E">
 
-Run:<br/>
-<pre>python getchain.py RVN</pre>
-<p />
-or
-<p />
-<pre>python getchain.py RVN testnet</pre>
-</font>
+<style>
+:root{
+  --bg:#080b10;
+  --bg2:#0d121a;
+  --panel:#111925;
+  --panel2:#152030;
+  --line:#1e2b3b;
+  --line2:#2a3b4f;
+  --text:#e8eef5;
+  --dim:#8fa1b5;
+  --dim2:#66788c;
+  --accent:#35e0a1;
+  --accent-dim:#1d7a58;
+  --blue:#6ea8fe;
+  --amber:#f5b445;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --radius:14px;
+  --maxw:1080px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(900px 500px at 15% -10%, rgba(53,224,161,.10), transparent 60%),
+    radial-gradient(700px 400px at 90% 0%, rgba(110,168,254,.08), transparent 60%);
+  z-index:0;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px;position:relative;z-index:1}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3{line-height:1.2;margin:0}
+code,kbd,pre{font-family:var(--mono)}
 
-<br/>
-<br/>
-<a href='https://github.com/chainstrap/chainstrap.github.io'>Source</a>
+/* ---------- nav ---------- */
+.nav{
+  position:sticky;top:0;z-index:20;
+  backdrop-filter:blur(12px);
+  background:rgba(8,11,16,.78);
+  border-bottom:1px solid var(--line);
+}
+.nav .wrap{display:flex;align-items:center;gap:26px;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:-.01em;color:var(--text)}
+.brand:hover{text-decoration:none}
+.brand svg{display:block}
+.brand .mark{color:var(--blue)}
+.nav nav{margin-left:auto;display:flex;gap:22px;align-items:center}
+.nav nav a{color:var(--dim);font-size:14.5px;font-weight:500}
+.nav nav a:hover{color:var(--text);text-decoration:none}
+@media (max-width:640px){
+  .nav nav a.hide-sm{display:none}
+  .nav .wrap{gap:14px;height:56px}
+  .nav nav{gap:16px}
+  .nav nav a{font-size:13.5px;white-space:nowrap}
+  .brand{font-size:15px}
+}
 
+/* ---------- hero ---------- */
+.hero{padding:86px 0 64px}
+.hero-grid{
+  display:grid;grid-template-columns:minmax(0,1fr) 292px;
+  gap:56px;align-items:center;
+}
+.hero-copy{min-width:0}
+.hero-logo{
+  justify-self:end;width:100%;max-width:292px;
+  background:#fff;border-radius:22px;padding:30px 26px;
+  box-shadow:0 26px 70px -26px rgba(110,168,254,.45), 0 0 0 1px rgba(255,255,255,.08);
+}
+.hero-logo img{display:block;width:100%;height:auto}
+@media (max-width:880px){
+  .hero{padding:54px 0 52px}
+  .hero-grid{grid-template-columns:1fr;gap:34px;justify-items:start}
+  .hero-logo{order:-1;justify-self:start;max-width:168px;padding:20px 18px;border-radius:18px}
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--accent);font-weight:600;
+  border:1px solid var(--accent-dim);border-radius:999px;
+  padding:5px 13px;background:rgba(53,224,161,.06);
+}
+.hero h1{
+  font-size:clamp(2.3rem,6vw,3.9rem);
+  font-weight:700;letter-spacing:-.035em;
+  margin:22px 0 0;
+}
+.hero h1 .g{
+  background:linear-gradient(100deg,var(--accent),var(--blue));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p.lede{
+  font-size:clamp(1.02rem,2.2vw,1.2rem);
+  color:var(--dim);max-width:60ch;margin:20px 0 0;
+}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;align-items:center}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:11px 19px;border-radius:10px;
+  font-size:15px;font-weight:600;
+  border:1px solid transparent;cursor:pointer;
+  transition:transform .12s ease, background .15s ease, border-color .15s ease;
+}
+.btn:hover{text-decoration:none;transform:translateY(-1px)}
+.btn-primary{background:var(--accent);color:#04160f}
+.btn-primary:hover{background:#4bf0b2}
+.btn-ghost{background:transparent;color:var(--text);border-color:var(--line2)}
+.btn-ghost:hover{border-color:var(--dim2);background:var(--panel)}
+
+/* code block */
+.code{
+  position:relative;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  margin-top:26px;
+  overflow:hidden;
+}
+.code header{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 14px;border-bottom:1px solid var(--line);
+  background:var(--bg2);
+  font-size:12px;color:var(--dim2);letter-spacing:.04em;text-transform:uppercase;
+}
+.code pre{
+  margin:0;padding:16px 18px;overflow-x:auto;
+  font-size:14px;line-height:1.75;color:#d7e4f0;
+}
+.code pre .p{color:var(--accent);user-select:none}
+.code pre .c{color:var(--dim2)}
+.copy{
+  position:absolute;top:6px;right:8px;
+  background:var(--panel2);border:1px solid var(--line2);color:var(--dim);
+  border-radius:7px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:var(--sans);
+}
+.copy:hover{color:var(--text);border-color:var(--dim2)}
+.copy.done{color:var(--accent);border-color:var(--accent-dim)}
+
+/* stats strip */
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:12px;overflow:hidden;margin-top:44px;
+}
+.stat{background:var(--bg2);padding:18px 20px}
+.stat b{display:block;font-size:1.5rem;font-weight:650;letter-spacing:-.02em}
+.stat span{font-size:13px;color:var(--dim2)}
+
+/* ---------- sections ---------- */
+section.band{padding:64px 0;border-top:1px solid var(--line)}
+.sec-head{margin-bottom:30px}
+.sec-head h2{font-size:clamp(1.5rem,3.4vw,2rem);letter-spacing:-.025em}
+.sec-head p{color:var(--dim);margin:10px 0 0;max-width:66ch}
+
+/* ---------- chain cards ---------- */
+.chain{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  margin-bottom:18px;
+  overflow:hidden;
+}
+.chain-head{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  flex-wrap:wrap;
+}
+.tick{
+  width:42px;height:42px;flex:none;border-radius:11px;
+  display:grid;place-items:center;
+  background:rgba(53,224,161,.10);
+  border:1px solid var(--accent-dim);
+  color:var(--accent);font-weight:700;font-size:13px;letter-spacing:.02em;
+}
+.chain-head .nm{font-size:1.08rem;font-weight:650;letter-spacing:-.01em}
+.chain-head .sub{font-size:13px;color:var(--dim2)}
+.chain-head .right{margin-left:auto;font-size:13px;color:var(--dim2)}
+
+.nets-wrap{overflow-x:auto}
+table.nets{width:100%;border-collapse:collapse;font-size:14.5px}
+table.nets th{
+  text-align:left;font-weight:600;font-size:11.5px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--dim2);
+  padding:11px 16px;border-bottom:1px solid var(--line);white-space:nowrap;
+}
+table.nets td{padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:middle}
+table.nets tr:last-child td{border-bottom:0}
+table.nets td.net{font-weight:600;white-space:nowrap}
+.check{color:var(--accent);font-weight:700}
+.nocheck{color:var(--dim2)}
+.num{font-family:var(--mono);font-size:13.5px}
+.dim{color:var(--dim2)}
+td.act{text-align:right;white-space:nowrap}
+.mini{
+  background:var(--panel2);border:1px solid var(--line2);color:var(--dim);
+  border-radius:7px;padding:4px 10px;font-size:12.5px;cursor:pointer;font-family:var(--sans);
+}
+.mini:hover{color:var(--text);border-color:var(--dim2)}
+.mini.done{color:var(--accent);border-color:var(--accent-dim)}
+.details{background:var(--bg2);border-bottom:1px solid var(--line)}
+.details .inner{padding:16px 18px;font-size:13.5px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin-bottom:14px}
+.kv dt{color:var(--dim2);white-space:nowrap}
+.kv dd{margin:0;font-family:var(--mono);font-size:12.5px;word-break:break-all}
+.cids{display:flex;flex-direction:column;gap:6px}
+.cid{
+  display:flex;align-items:center;gap:10px;
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:7px 11px;font-family:var(--mono);font-size:12px;
+}
+.cid .idx{color:var(--dim2);flex:none}
+.cid .h{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#cfe0ef}
+.cid .sz{margin-left:auto;color:var(--dim2);flex:none;white-space:nowrap}
+.cid a{flex:none;font-size:12px}
+@media (max-width:720px){
+  table.nets th.opt, table.nets td.opt{display:none}
+  .cid .sz{display:none}
+}
+@media (max-width:560px){
+  table.nets{font-size:13.5px}
+  table.nets th{padding:10px 11px}
+  table.nets td{padding:11px 11px}
+  .details .inner{padding:14px 12px}
+  .kv{grid-template-columns:1fr;gap:2px 0}
+  .kv dd{margin-bottom:8px}
+}
+.msg{padding:22px;color:var(--dim);font-size:14.5px;text-align:center}
+.skeleton{
+  height:14px;border-radius:6px;
+  background:linear-gradient(90deg,var(--panel2),var(--line),var(--panel2));
+  background-size:200% 100%;animation:sh 1.2s linear infinite;
+}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:6px;margin-bottom:-1px;flex-wrap:wrap}
+.tab{
+  background:transparent;border:1px solid transparent;border-bottom:0;
+  color:var(--dim);padding:9px 17px;border-radius:10px 10px 0 0;
+  font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);
+}
+.tab[aria-selected="true"]{
+  background:var(--panel);border-color:var(--line);color:var(--text);
+}
+.panel{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:0 12px 12px 12px;padding:20px;
+}
+.panel h4{margin:0 0 6px;font-size:14px;color:var(--dim);font-weight:600}
+.panel .code{margin-top:0}
+.panel .code + h4{margin-top:20px}
+
+/* ---------- steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.step{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--radius);padding:20px;
+}
+.step .n{
+  width:28px;height:28px;border-radius:8px;display:grid;place-items:center;
+  background:rgba(110,168,254,.12);border:1px solid rgba(110,168,254,.3);
+  color:var(--blue);font-size:13px;font-weight:700;margin-bottom:12px;
+}
+.step h3{font-size:15.5px;margin-bottom:6px}
+.step p{margin:0;color:var(--dim);font-size:14px}
+
+/* ---------- faq ---------- */
+details.faq{
+  border:1px solid var(--line);border-radius:12px;
+  background:var(--panel);margin-bottom:10px;overflow:hidden;
+}
+details.faq summary{
+  cursor:pointer;padding:15px 18px;font-weight:600;font-size:15px;
+  list-style:none;display:flex;align-items:center;gap:10px;
+}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary::before{
+  content:"+";color:var(--accent);font-family:var(--mono);font-size:16px;flex:none;
+}
+details.faq[open] summary::before{content:"–"}
+details.faq .body{padding:0 18px 16px 42px;color:var(--dim);font-size:14.5px}
+details.faq .body p{margin:0 0 10px}
+details.faq .body p:last-child{margin:0}
+
+.note{
+  border-left:2px solid var(--amber);
+  background:rgba(245,180,69,.06);
+  padding:12px 16px;border-radius:0 8px 8px 0;
+  color:var(--dim);font-size:14px;margin-top:18px;
+}
+.note b{color:var(--text)}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);padding:34px 0 46px;color:var(--dim2);font-size:14px}
+footer .wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+footer a{color:var(--dim)}
+footer .sp{margin-left:auto}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg class="mark" width="17" height="31" viewBox="0 0 22 40" aria-hidden="true" focusable="false">
+        <g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round">
+          <path d="M11 1.5 17.2 4.75 17.2 11.25 11 14.5 4.8 11.25 4.8 4.75Z"/>
+          <path d="M11 9.5 17.2 12.75 17.2 19.25 11 22.5 4.8 19.25 4.8 12.75Z"/>
+          <path d="M11 17.5 17.2 20.75 17.2 27.25 11 30.5 4.8 27.25 4.8 20.75Z"/>
+        </g>
+        <path d="M8.6 27.5h4.8v3.6h3.4L11 38.5 5.2 31.1h3.4Z" fill="currentColor"/>
+      </svg>
+      ChainStrap
+    </a>
+    <nav>
+      <a href="#chains">Chains</a>
+      <a href="#start">Get started</a>
+      <a href="#how" class="hide-sm">How it works</a>
+      <a href="#faq" class="hide-sm">FAQ</a>
+      <a href="https://github.com/chainstrap/chainstrap.github.io">Source</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+      <span class="eyebrow">Blockchain + Bootstrap</span>
+      <h1>Sync a node in <span class="g">hours, not weeks</span>.</h1>
+      <p class="lede">
+        ChainStrap publishes compressed snapshots of raw blockchain data to IPFS.
+        One small Python script pulls a snapshot down, unpacks it into the right
+        folder for your operating system, and hands the rest to your node — which
+        verifies every block itself, exactly as it always would.
+      </p>
+
+      <div class="cta">
+        <a class="btn btn-primary" href="getchain.py" download>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M8 1v9m0 0L4.5 6.5M8 10l3.5-3.5M2 12v2h12v-2"/>
+          </svg>
+          Download getchain.py
+        </a>
+        <a class="btn btn-ghost" href="#chains">Browse available chains</a>
+      </div>
+      </div>
+
+      <div class="hero-logo">
+        <img src="chainstraplogo.jpg" width="1152" height="1712"
+             alt="ChainStrap logo: three chain links forming a downward arrow">
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="code">
+        <header>Quick start</header>
+        <button class="copy" data-copy="curl -O https://chainstrap.com/getchain.py&#10;python3 getchain.py RVN">Copy</button>
+<pre><span class="p">$</span> curl -O https://chainstrap.com/getchain.py
+<span class="p">$</span> python3 getchain.py RVN
+<span class="c"># ...then start your node. That's it.</span></pre>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><b id="stat-chains">—</b><span>chains published</span></div>
+        <div class="stat"><b id="stat-snaps">—</b><span>snapshots live</span></div>
+        <div class="stat"><b id="stat-size">—</b><span>total snapshot data</span></div>
+        <div class="stat"><b>0</b><span>servers in the path</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="chains">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Available chains</h2>
+        <p>
+          Every snapshot below is addressed by its IPFS content ID, so what you download
+          is bit-for-bit what was published — and it comes from the IPFS swarm, not from us.
+          A check mark means a testnet snapshot is published alongside mainnet.
+        </p>
+      </div>
+
+      <div id="chain-list">
+        <div class="chain">
+          <div class="chain-head">
+            <div class="tick"><div class="skeleton" style="width:22px"></div></div>
+            <div style="flex:1">
+              <div class="skeleton" style="width:150px;margin-bottom:7px"></div>
+              <div class="skeleton" style="width:90px;height:10px"></div>
+            </div>
+          </div>
+          <div class="msg">Loading chain index…</div>
+        </div>
+      </div>
+
+      <noscript>
+        <div class="note">
+          This list is built in your browser from
+          <a href="chains.json">chains.json</a> and each chain's metadata file
+          (for example <a href="RVN/RVN-mainnet.json">RVN/RVN-mainnet.json</a>).
+          With JavaScript off you can read those files directly — the download itself
+          never needs a browser.
+        </div>
+      </noscript>
+    </div>
+  </section>
+
+  <section class="band" id="start">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Get started</h2>
+        <p>
+          <code>getchain.py</code> is a single file with no third-party dependencies — the
+          Python that ships with your OS is enough. If you run an IPFS daemon locally it
+          will use it; if not, it falls back to public IPFS gateways over plain HTTPS.
+        </p>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="os-linux" id="tab-linux">Linux</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="os-mac" id="tab-mac">macOS</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="os-win" id="tab-win">Windows</button>
+      </div>
+
+      <div class="panel" id="os-linux" role="tabpanel" aria-labelledby="tab-linux">
+        <h4>1 &nbsp;Stop your node, then fetch the script</h4>
+        <div class="code">
+          <button class="copy" data-copy="curl -O https://chainstrap.com/getchain.py">Copy</button>
+<pre><span class="p">$</span> curl -O https://chainstrap.com/getchain.py</pre>
+        </div>
+        <h4>2 &nbsp;Pull a chain</h4>
+        <div class="code">
+          <button class="copy" data-copy="python3 getchain.py RVN">Copy</button>
+<pre><span class="p">$</span> python3 getchain.py RVN             <span class="c"># mainnet</span>
+<span class="p">$</span> python3 getchain.py RVN --testnet   <span class="c"># testnet</span>
+<span class="p">$</span> python3 getchain.py --list          <span class="c"># what's available</span></pre>
+        </div>
+        <h4>3 &nbsp;Start your node</h4>
+        <p class="dim" style="margin:0;font-size:14px">
+          Data lands in <code>~/.raven</code> (or the equivalent for the chain you picked).
+          Launch the client normally and let it verify from there.
+        </p>
+      </div>
+
+      <div class="panel" id="os-mac" role="tabpanel" aria-labelledby="tab-mac" hidden>
+        <h4>1 &nbsp;Quit your node, then fetch the script</h4>
+        <div class="code">
+          <button class="copy" data-copy="curl -O https://chainstrap.com/getchain.py">Copy</button>
+<pre><span class="p">$</span> curl -O https://chainstrap.com/getchain.py</pre>
+        </div>
+        <h4>2 &nbsp;Pull a chain</h4>
+        <div class="code">
+          <button class="copy" data-copy="python3 getchain.py RVN">Copy</button>
+<pre><span class="p">$</span> python3 getchain.py RVN             <span class="c"># mainnet</span>
+<span class="p">$</span> python3 getchain.py RVN --testnet   <span class="c"># testnet</span></pre>
+        </div>
+        <h4>3 &nbsp;Start your node</h4>
+        <p class="dim" style="margin:0;font-size:14px">
+          Data lands in <code>~/Library/Application&nbsp;Support/Raven</code>.
+          If macOS ships an older Python, install a current one from
+          <a href="https://www.python.org/downloads/macos/">python.org</a>.
+        </p>
+      </div>
+
+      <div class="panel" id="os-win" role="tabpanel" aria-labelledby="tab-win" hidden>
+        <h4>1 &nbsp;Install Python, close your wallet, then fetch the script</h4>
+        <p class="dim" style="margin:0 0 12px;font-size:14px">
+          Get Python from <a href="https://www.python.org/downloads/windows/">python.org</a>
+          and tick <b>Add python.exe to PATH</b> during setup. Then, in PowerShell:
+        </p>
+        <div class="code">
+          <button class="copy" data-copy="curl.exe -O https://chainstrap.com/getchain.py">Copy</button>
+<pre><span class="p">&gt;</span> curl.exe -O https://chainstrap.com/getchain.py</pre>
+        </div>
+        <h4>2 &nbsp;Pull a chain</h4>
+        <div class="code">
+          <button class="copy" data-copy="python getchain.py RVN">Copy</button>
+<pre><span class="p">&gt;</span> python getchain.py RVN             <span class="c"># mainnet</span>
+<span class="p">&gt;</span> python getchain.py RVN --testnet   <span class="c"># testnet</span></pre>
+        </div>
+        <h4>3 &nbsp;Start your wallet</h4>
+        <p class="dim" style="margin:0;font-size:14px">
+          Data lands in <code>%APPDATA%\Raven</code>.
+        </p>
+      </div>
+
+      <div class="note">
+        <b>Close the client first.</b> Extracting a snapshot underneath a running node
+        will corrupt its database. ChainStrap never touches <code>wallet.dat</code>,
+        <code>*.conf</code>, or anything outside the block and chainstate folders — but a
+        backup of your wallet before any bulk operation is always the right habit.
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>How it works</h2>
+        <p>
+          Four moving parts, none of which require you to trust us with anything more
+          than a starting point for your own node's verification.
+        </p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="n">1</div>
+          <h3>A full node syncs</h3>
+          <p>A machine we run stays fully synced on each chain the normal way — no shortcuts on the publishing side.</p>
+        </div>
+        <div class="step">
+          <div class="n">2</div>
+          <h3>savechain.py packs it</h3>
+          <p>Driven by each chain's config file, it stops the node, zips the block, index, chainstate and asset folders into ~2&nbsp;GB parts, and adds them to IPFS.</p>
+        </div>
+        <div class="step">
+          <div class="n">3</div>
+          <h3>IPFS distributes it</h3>
+          <p>Each part gets a content ID. Anyone who has downloaded it can serve it. Popular snapshots get faster, and our bandwidth bill stays flat.</p>
+        </div>
+        <div class="step">
+          <div class="n">4</div>
+          <h3>getchain.py unpacks it</h3>
+          <p>It reads the same config, works out the right data directory for your OS, downloads the parts, and extracts them in place.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Trust &amp; questions</h2>
+      </div>
+
+      <details class="faq">
+        <summary>Do I have to trust the snapshot?</summary>
+        <div class="body">
+          <p>Not for correctness. Your node re-derives everything: every transaction and
+          signature, every merkle root, every block header chained by proof-of-work back to
+          genesis. A bad snapshot gets rejected, not silently accepted. If you want the node
+          to redo that work over data it has already indexed, start it with <code>-reindex</code>.</p>
+          <p>What you <em>are</em> trusting is the script running on your machine — that it
+          won't touch your wallet. It's one readable file with no dependencies, and reading
+          it end to end takes a few minutes. Please do.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Do I need to install IPFS?</summary>
+        <div class="body">
+          <p>No. <code>getchain.py</code> checks for a local daemon on
+          <code>127.0.0.1:5001</code> and uses it when present — that's the fastest and most
+          decentralized path. Otherwise it downloads over HTTPS from public IPFS gateways,
+          with resume support if the connection drops.</p>
+          <p>Running a daemon and pinning what you download makes the next person's download
+          faster. That's the whole point.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Why is the snapshot split into parts?</summary>
+        <div class="body">
+          <p>Chain data runs to tens of gigabytes. Splitting it into roughly 2&nbsp;GB zip
+          parts keeps individual transfers recoverable — a failure costs you one part, not
+          the whole download — and lets the parts spread across IPFS independently.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>Which chains can this work with?</summary>
+        <div class="body">
+          <p>Any Bitcoin-derived client with the usual <code>blocks</code> /
+          <code>chainstate</code> layout, on mainnet or testnet. Support for a chain is a
+          config file describing its data directory per OS, its testnet subfolder, and which
+          folders to pack — no code changes. Adding one is a pull request.</p>
+        </div>
+      </details>
+
+      <details class="faq">
+        <summary>How current are the snapshots?</summary>
+        <div class="body">
+          <p>Publishing runs on a daily cron. Each row above shows the block height captured
+          and when it was published; your node syncs the remaining blocks from the network
+          on its next start.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="band" id="publish">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Publish your own snapshots</h2>
+        <p>
+          Have a fully synced node and want to serve a chain that isn't listed? Add a config
+          file for it and run <code>savechain.py</code> on a daily schedule.
+        </p>
+      </div>
+      <div class="code">
+        <button class="copy" data-copy="git clone https://github.com/chainstrap/chainstrap.github.io.git&#10;cd chainstrap.github.io&#10;ipfs daemon &&#10;./savechain.py RVN --dry-run&#10;./savechain.py RVN">Copy</button>
+<pre><span class="p">$</span> git clone https://github.com/chainstrap/chainstrap.github.io.git
+<span class="p">$</span> cd chainstrap.github.io
+<span class="p">$</span> ipfs daemon &amp;                   <span class="c"># kubo, with the daemon running</span>
+<span class="p">$</span> ./savechain.py RVN --dry-run    <span class="c"># check what it would pack</span>
+<span class="p">$</span> ./savechain.py RVN              <span class="c"># stop node, zip, pin, write metadata</span></pre>
+      </div>
+      <p class="dim" style="font-size:14px;margin-top:16px">
+        RPC credentials come from the node's own <code>.conf</code> or its
+        <code>.cookie</code> file — nothing is stored in this repo. A new chain is a
+        <code>&lt;CODE&gt;/&lt;CODE&gt;-config.json</code> describing its data directory per OS,
+        its testnet folder and the folders to pack, plus its code in
+        <a href="chains.json">chains.json</a>.
+      </p>
+      <p class="dim" style="font-size:14px;margin-top:6px">
+        See <a href="https://github.com/chainstrap/chainstrap.github.io/blob/master/scripts/README.md">scripts/README.md</a>
+        for the cron and heartbeat setup.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>ChainStrap — a portmanteau of bootstrap and blockchain.</span>
+    <span class="sp"></span>
+    <a href="getchain.py">getchain.py</a>
+    <a href="chains.json">chains.json</a>
+    <a href="https://github.com/chainstrap/chainstrap.github.io">GitHub</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- helpers ---------- */
+
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function getJSON(url) {
+    return fetch(url, { cache: "no-cache" }).then(function (r) {
+      if (!r.ok) throw new Error(url + " → " + r.status);
+      return r.json();
+    });
+  }
+
+  function fmtInt(n) {
+    return typeof n === "number" && isFinite(n) ? n.toLocaleString() : null;
+  }
+
+  function fmtBytes(n) {
+    if (typeof n !== "number" || !isFinite(n) || n <= 0) return null;
+    var u = ["B", "KB", "MB", "GB", "TB"], i = 0;
+    while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+    return (n >= 100 || i < 2 ? Math.round(n) : n.toFixed(1)) + " " + u[i];
+  }
+
+  function fmtDate(s) {
+    if (!s) return null;
+    var d = new Date(s);
+    if (isNaN(d.getTime())) return null;
+    var days = Math.floor((Date.now() - d.getTime()) / 86400000);
+    var abs = d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    if (days <= 0) return "today";
+    if (days === 1) return "yesterday";
+    if (days < 30) return days + " days ago";
+    return abs;
+  }
+
+  function plural(n, word) {
+    return n + " " + word + (n === 1 ? "" : "s");
+  }
+
+  /* Copy-to-clipboard, delegated so it covers dynamically built rows too. */
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      var ta = el("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy") ? resolve() : reject(); }
+      catch (e) { reject(e); }
+      finally { document.body.removeChild(ta); }
+    });
+  }
+
+  document.addEventListener("click", function (ev) {
+    var btn = ev.target.closest("[data-copy]");
+    if (!btn) return;
+    copyText(btn.getAttribute("data-copy")).then(function () {
+      var was = btn.textContent;
+      btn.textContent = "Copied";
+      btn.classList.add("done");
+      setTimeout(function () { btn.textContent = was; btn.classList.remove("done"); }, 1400);
+    }, function () {
+      btn.textContent = "Press ⌘/Ctrl+C";
+    });
+  });
+
+  /* ---------- OS tabs ---------- */
+
+  var tabs = [].slice.call(document.querySelectorAll(".tab"));
+  function selectTab(tab) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      var p = document.getElementById(t.getAttribute("aria-controls"));
+      if (p) p.hidden = !on;
+    });
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () { selectTab(t); });
+  });
+  (function autoTab() {
+    var p = navigator.platform || navigator.userAgent || "";
+    var pick = /Win/i.test(p) ? "tab-win" : /Mac|iPhone|iPad/i.test(p) ? "tab-mac" : "tab-linux";
+    var t = document.getElementById(pick);
+    if (t) selectTab(t);
+  })();
+
+  /* ---------- chain index ---------- */
+
+  /* Snapshot metadata has grown a couple of shapes over the years; normalize
+     them all to { cids:[{cid,bytes}], blocks, blockhash, bytes, updated }. */
+  function normalize(meta) {
+    if (!meta) return null;
+    var parts = [];
+    if (Array.isArray(meta.parts)) {
+      parts = meta.parts.map(function (p) {
+        return typeof p === "string" ? { cid: p, bytes: null } : { cid: p.cid || p.hash, bytes: p.bytes || null };
+      });
+    } else if (Array.isArray(meta.ipfs_hashes)) {
+      parts = meta.ipfs_hashes.map(function (h) { return { cid: h, bytes: null }; });
+    } else if (meta.ipfs_hash) {
+      parts = [{ cid: meta.ipfs_hash, bytes: null }];
+    }
+    parts = parts.filter(function (p) { return p.cid; });
+    if (!parts.length) return null;
+
+    var total = meta.bytes;
+    if (typeof total !== "number") {
+      var sum = 0, known = true;
+      parts.forEach(function (p) { if (typeof p.bytes === "number") sum += p.bytes; else known = false; });
+      total = known ? sum : null;
+    }
+    return {
+      cids: parts,
+      blocks: meta.blocks,
+      blockhash: meta.blockhash || meta.bestblockhash,
+      bytes: total,
+      updated: meta.updated || meta.date,
+      /* cloudflare-ipfs.com was retired in 2024 but lingers in old metadata. */
+      gateway: meta.baseurl && meta.baseurl.indexOf("cloudflare-ipfs.com") === -1
+        ? meta.baseurl : "https://ipfs.io/ipfs/"
+    };
+  }
+
+  function netRow(chain, netName, snap, isTestnet) {
+    var tr = el("tr");
+
+    var tdNet = el("td", "net");
+    tdNet.appendChild(document.createTextNode(netName));
+    tr.appendChild(tdNet);
+
+    var tdOk = el("td");
+    if (snap) {
+      tdOk.className = "check";
+      tdOk.textContent = "✓";
+      tdOk.setAttribute("aria-label", netName + " snapshot available");
+    } else {
+      tdOk.className = "nocheck";
+      tdOk.textContent = "—";
+      tdOk.setAttribute("aria-label", "no " + netName + " snapshot");
+    }
+    tr.appendChild(tdOk);
+
+    var tdH = el("td", "num");
+    tdH.textContent = snap && fmtInt(snap.blocks) ? fmtInt(snap.blocks) : "—";
+    if (!snap) tdH.className = "num dim";
+    tr.appendChild(tdH);
+
+    var tdSz = el("td", "num opt");
+    tdSz.textContent = snap ? (fmtBytes(snap.bytes) || plural(snap.cids.length, "part")) : "—";
+    tr.appendChild(tdSz);
+
+    var tdUp = el("td", "opt dim");
+    tdUp.textContent = snap ? (fmtDate(snap.updated) || "—") : "—";
+    tr.appendChild(tdUp);
+
+    var tdAct = el("td", "act");
+    if (snap) {
+      var cmd = "python3 getchain.py " + chain.code + (isTestnet ? " --testnet" : "");
+      var copy = el("button", "mini", "Copy");
+      copy.setAttribute("data-copy", cmd);
+      copy.title = cmd;
+      var more = el("button", "mini", "Details");
+      more.style.marginLeft = "6px";
+      tdAct.appendChild(copy);
+      tdAct.appendChild(more);
+
+      var detail = el("tr", "details");
+      detail.hidden = true;
+      var td = el("td");
+      td.colSpan = 6;
+      td.appendChild(detailPanel(chain, snap, cmd));
+      detail.appendChild(td);
+      tr._detail = detail;
+
+      more.addEventListener("click", function () {
+        detail.hidden = !detail.hidden;
+        more.textContent = detail.hidden ? "Details" : "Hide";
+      });
+    } else {
+      tdAct.appendChild(el("span", "dim", "not published"));
+    }
+    tr.appendChild(tdAct);
+
+    return tr;
+  }
+
+  function detailPanel(chain, snap, cmd) {
+    var inner = el("div", "inner");
+
+    var kv = el("dl", "kv");
+    function pair(k, v) {
+      if (!v) return;
+      kv.appendChild(el("dt", null, k));
+      kv.appendChild(el("dd", null, v));
+    }
+    pair("Command", cmd);
+    pair("Best block", snap.blockhash || "");
+    pair("Parts", plural(snap.cids.length, "part") + (snap.bytes ? " · " + fmtBytes(snap.bytes) + " total" : ""));
+    inner.appendChild(kv);
+
+    var list = el("div", "cids");
+    snap.cids.forEach(function (p, i) {
+      var row = el("div", "cid");
+      row.appendChild(el("span", "idx", String(i + 1).padStart(2, "0")));
+      var h = el("span", "h", p.cid);
+      h.title = p.cid;
+      row.appendChild(h);
+      var sz = el("span", "sz", fmtBytes(p.bytes) || "");
+      row.appendChild(sz);
+      var copy = el("button", "mini", "Copy CID");
+      copy.setAttribute("data-copy", p.cid);
+      row.appendChild(copy);
+      var link = el("a", null, "Gateway ↗");
+      link.href = snap.gateway.replace(/\/?$/, "/") + p.cid;
+      link.rel = "noopener";
+      link.target = "_blank";
+      row.appendChild(link);
+      list.appendChild(row);
+    });
+    inner.appendChild(list);
+
+    var hint = el("p", "dim");
+    hint.style.cssText = "margin:14px 0 0;font-size:13px";
+    hint.textContent = "Gateway links are a fallback for inspection. getchain.py prefers your local IPFS daemon and verifies each part before extracting.";
+    inner.appendChild(hint);
+
+    return inner;
+  }
+
+  function chainCard(chain) {
+    var card = el("div", "chain");
+
+    var head = el("div", "chain-head");
+    var tick = el("div", "tick", chain.code);
+    head.appendChild(tick);
+
+    var idBox = el("div");
+    idBox.appendChild(el("div", "nm", chain.name || chain.code));
+    var sub = el("div", "sub");
+    sub.textContent = chain.client ? chain.client : chain.code;
+    idBox.appendChild(sub);
+    head.appendChild(idBox);
+
+    var right = el("div", "right");
+    if (chain.website) {
+      var a = el("a", null, "Project site ↗");
+      a.href = chain.website;
+      a.rel = "noopener";
+      a.target = "_blank";
+      right.appendChild(a);
+    }
+    head.appendChild(right);
+    card.appendChild(head);
+
+    if (!chain.mainnet && !chain.testnet) {
+      card.appendChild(el("div", "msg", "No snapshot published yet for " + (chain.name || chain.code) + "."));
+      return card;
+    }
+
+    var table = el("table", "nets");
+    var thead = el("thead");
+    var htr = el("tr");
+    [["Network", ""], ["Snapshot", ""], ["Height", ""], ["Size", "opt"], ["Published", "opt"], ["", ""]]
+      .forEach(function (h) {
+        var th = el("th", h[1], h[0]);
+        htr.appendChild(th);
+      });
+    thead.appendChild(htr);
+    table.appendChild(thead);
+
+    var tbody = el("tbody");
+    [["Mainnet", chain.mainnet, false], ["Testnet", chain.testnet, true]].forEach(function (n) {
+      var row = netRow(chain, n[0], n[1], n[2]);
+      tbody.appendChild(row);
+      if (row._detail) tbody.appendChild(row._detail);
+    });
+    table.appendChild(tbody);
+    var scroller = el("div", "nets-wrap");
+    scroller.appendChild(table);
+    card.appendChild(scroller);
+    return card;
+  }
+
+  function loadChain(code) {
+    var dir = encodeURIComponent(code);
+    var base = dir + "/" + dir;
+    return Promise.all([
+      getJSON(base + "-config.json").catch(function () { return {}; }),
+      getJSON(base + "-mainnet.json").catch(function () { return null; }),
+      getJSON(base + "-testnet.json").catch(function () { return null; })
+    ]).then(function (r) {
+      return {
+        code: code,
+        name: r[0].name || code,
+        website: r[0].website,
+        client: r[0].client,
+        mainnet: normalize(r[1]),
+        testnet: normalize(r[2])
+      };
+    });
+  }
+
+  function renderStats(chains) {
+    var snaps = 0, bytes = 0, bytesKnown = false;
+    chains.forEach(function (c) {
+      [c.mainnet, c.testnet].forEach(function (s) {
+        if (!s) return;
+        snaps++;
+        if (typeof s.bytes === "number") { bytes += s.bytes; bytesKnown = true; }
+      });
+    });
+    $("#stat-chains").textContent = String(chains.length);
+    $("#stat-snaps").textContent = String(snaps);
+    $("#stat-size").textContent = bytesKnown ? fmtBytes(bytes) : "IPFS";
+  }
+
+  function fail(msg) {
+    var box = $("#chain-list");
+    box.innerHTML = "";
+    var card = el("div", "chain");
+    var m = el("div", "msg");
+    m.appendChild(document.createTextNode(msg + " "));
+    var a = el("a", null, "Read chains.json directly");
+    a.href = "chains.json";
+    m.appendChild(a);
+    m.appendChild(document.createTextNode("."));
+    card.appendChild(m);
+    box.appendChild(card);
+  }
+
+  getJSON("chains.json")
+    .then(function (idx) {
+      var codes = (idx.chains || []).map(function (c) {
+        return typeof c === "string" ? c : c.code;
+      }).filter(Boolean);
+      if (!codes.length) throw new Error("empty index");
+      return Promise.all(codes.map(loadChain));
+    })
+    .then(function (chains) {
+      var box = $("#chain-list");
+      box.innerHTML = "";
+      chains.forEach(function (c) { box.appendChild(chainCard(c)); });
+      renderStats(chains);
+    })
+    .catch(function (e) {
+      fail("Could not load the chain index" + (location.protocol === "file:" ? " — this page needs to be served over http(s), not opened from disk." : "."));
+      if (window.console) console.error(e);
+    });
+})();
+</script>
+</body>
+</html>

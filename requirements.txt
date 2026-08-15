@@ -1,4 +1,6 @@
-python_bitcoinrpc==1.0
-bitcoinrpc==0.4.0
-ipfshttpclient==0.7.0
-wget==3.2
+# getchain.py has no dependencies at all - the Python that ships with your OS
+# is enough (3.6+). There is nothing to install.
+#
+# savechain.py (publishing side only) also needs no Python packages, but it
+# does need the IPFS command-line tool with a running daemon:
+#   https://docs.ipfs.tech/install/command-line/

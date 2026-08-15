@@ -1,18 +1,30 @@
 {
-	"chain" : "RVN",
-	"folders" : {
-					"assets":"*", 
-					"blocks":"*",
-				 	"blocks/index":"*",
-				 	"chainstate":"*"
-				},
-	"mainnet_rpc_port" : 8766,
-	"testnet_rpc_port" : 18766,
-	"testnet_dir" : "testnet6",
-	"subdir" : "raven",
-	"win_dir" : "%USERDIR%/",
-	"mac_dir" : "%USERDIR%/Library/Application Support/",
-	"lin_dir" : "%USERDIR%/.",
-	"rpc_user" : "rpcuser",
-	"rpc_user" : "rpcpass555"
+  "chain": "RVN",
+  "name": "Ravencoin",
+  "website": "https://ravencoin.org",
+  "client": "ravend / Raven-Qt",
+
+  "datadir": {
+    "windows": "%APPDATA%/Raven",
+    "darwin": "~/Library/Application Support/Raven",
+    "linux": "~/.raven"
+  },
+  "testnet_dir": "testnet6",
+  "conf_file": "raven.conf",
+  "folders": [
+    "assets",
+    "blocks",
+    "blocks/index",
+    "chainstate"
+  ],
+
+  "mainnet_rpc_port": 8766,
+  "testnet_rpc_port": 18766,
+  "regtest_rpc_port": 18443,
+
+  "_legacy_comment": "The keys below are read by copies of getchain.py older than 2026-08. New clients use the datadir block above.",
+  "subdir": "raven",
+  "win_dir": "%USERDIR%/",
+  "mac_dir": "%USERDIR%/Library/Application Support/",
+  "lin_dir": "%USERDIR%/."
 }

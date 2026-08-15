@@ -11,7 +11,7 @@
     "QmZXqx4NGXtvV7GjzJ5NSqFY8hJKeWWyzLGfxAY2oFj8Cb",
     "QmVvr6QAYcb9AvZBftqAntDZq8csFFNFSMj4HYFZx4Hok4"
   ],
-  "baseurl": "https://cloudflare-ipfs.com/ipfs/",
+  "baseurl": "https://ipfs.io/ipfs/",
   "chain": "RVN",
   "mode": "mainnet"
 }
