@@ -621,37 +621,6 @@ footer .sp{margin-left:auto}
     </div>
   </section>
 
-  <section class="band" id="publish">
-    <div class="wrap">
-      <div class="sec-head">
-        <h2>Publish your own snapshots</h2>
-        <p>
-          Have a fully synced node and want to serve a chain that isn't listed? Add a config
-          file for it and run <code>savechain.py</code> on a daily schedule.
-        </p>
-      </div>
-      <div class="code">
-        <button class="copy" data-copy="git clone https://github.com/chainstrap/chainstrap.github.io.git&#10;cd chainstrap.github.io&#10;ipfs daemon &&#10;./savechain.py RVN --dry-run&#10;./savechain.py RVN">Copy</button>
-<pre><span class="p">$</span> git clone https://github.com/chainstrap/chainstrap.github.io.git
-<span class="p">$</span> cd chainstrap.github.io
-<span class="p">$</span> ipfs daemon &amp;                   <span class="c"># kubo, with the daemon running</span>
-<span class="p">$</span> ./savechain.py RVN --dry-run    <span class="c"># check what it would pack</span>
-<span class="p">$</span> ./savechain.py RVN              <span class="c"># stop node, zip, pin, write metadata</span></pre>
-      </div>
-      <p class="dim" style="font-size:14px;margin-top:16px">
-        RPC credentials come from the node's own <code>.conf</code> or its
-        <code>.cookie</code> file — nothing is stored in this repo. A new chain is a
-        <code>&lt;CODE&gt;/&lt;CODE&gt;-config.json</code> describing its data directory per OS,
-        its testnet folder and the folders to pack, plus its code in
-        <a href="chains.json">chains.json</a>.
-      </p>
-      <p class="dim" style="font-size:14px;margin-top:6px">
-        See <a href="https://github.com/chainstrap/chainstrap.github.io/blob/master/scripts/README.md">scripts/README.md</a>
-        for the cron and heartbeat setup.
-      </p>
-    </div>
-  </section>
-
 </main>
 
 <footer>
