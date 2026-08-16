@@ -901,11 +901,6 @@ footer .sp{margin-left:auto}
     head.appendChild(right);
     card.appendChild(head);
 
-    if (!chain.mainnet && !chain.testnet) {
-      card.appendChild(el("div", "msg", "No snapshot published yet for " + (chain.name || chain.code) + "."));
-      return card;
-    }
-
     var table = el("table", "nets");
     var thead = el("thead");
     var htr = el("tr");
@@ -927,6 +922,12 @@ footer .sp{margin-left:auto}
     var scroller = el("div", "nets-wrap");
     scroller.appendChild(table);
     card.appendChild(scroller);
+
+    if (!chain.mainnet && !chain.testnet) {
+      card.appendChild(el("div", "msg",
+        "Tracked, but no snapshot is published yet — " + (chain.name || chain.code) +
+        " data still has to be synced the usual way for now."));
+    }
     return card;
   }
 
