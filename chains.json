@@ -1,6 +1,7 @@
 {
   "_comment": "Index of chains published by this ChainStrap node. Each entry points at a folder containing <CODE>-config.json plus <CODE>-mainnet.json / <CODE>-testnet.json snapshot metadata. Add a chain by creating the folder and adding its code here.",
   "chains": [
-    "RVN"
+    "RVN",
+    "BTC"
   ]
 }
