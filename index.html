@@ -922,12 +922,6 @@ footer .sp{margin-left:auto}
     var scroller = el("div", "nets-wrap");
     scroller.appendChild(table);
     card.appendChild(scroller);
-
-    if (!chain.mainnet && !chain.testnet) {
-      card.appendChild(el("div", "msg",
-        "Tracked, but no snapshot is published yet — " + (chain.name || chain.code) +
-        " data still has to be synced the usual way for now."));
-    }
     return card;
   }
 
@@ -987,10 +981,18 @@ footer .sp{margin-left:auto}
       return Promise.all(codes.map(loadChain));
     })
     .then(function (chains) {
+      /* A chain can be configured here before anything is published for it.
+         Until a snapshot exists there is nothing to offer, so leave it out. */
+      var live = chains.filter(function (c) { return c.mainnet || c.testnet; });
       var box = $("#chain-list");
       box.innerHTML = "";
-      chains.forEach(function (c) { box.appendChild(chainCard(c)); });
-      renderStats(chains);
+      if (!live.length) {
+        var card = el("div", "chain");
+        card.appendChild(el("div", "msg", "No snapshots are published yet. Check back soon."));
+        box.appendChild(card);
+      }
+      live.forEach(function (c) { box.appendChild(chainCard(c)); });
+      renderStats(live);
     })
     .catch(function (e) {
       fail("Could not load the chain index" + (location.protocol === "file:" ? " — this page needs to be served over http(s), not opened from disk." : "."));
