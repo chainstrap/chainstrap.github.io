@@ -9,7 +9,7 @@
     "darwin": "~/Library/Application Support/Raven",
     "linux": "~/.raven"
   },
-  "testnet_dir": "testnet6",
+  "testnet_dir": "testnet7",
   "conf_file": "raven.conf",
   "folders": [
     "assets",
