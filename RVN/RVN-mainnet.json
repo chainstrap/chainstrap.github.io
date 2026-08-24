@@ -1,15 +1,15 @@
 {
   "chain": "RVN",
   "mode": "mainnet",
-  "blocks": 4505776,
-  "blockhash": "000000000005d3d76dc5a29b280e67f047697102c0b273a120e65a9f7bf88ac9",
-  "updated": "2026-08-23T00:55:01Z",
-  "bytes": 34413394859,
+  "blocks": 4507204,
+  "blockhash": "0000000000062844713d38e0d197ae35264a85b14278558bfab12aceba41663f",
+  "updated": "2026-08-24T00:50:55Z",
+  "bytes": 34414405932,
   "parts": [
     {
-      "cid": "QmQu8LmNVtDtFsS4kQdvZnfDGPcmesvubd2PG4tzk1GXdD",
-      "bytes": 2082714125,
-      "sha256": "04661356ef7adb6087aa3f48f8dc171a089332c7f29d7f3f31636dd31882f919"
+      "cid": "QmbHJRavJP1fdiRL3gijNsoQ1TZV1mrVc5G7f4jvhn5rZE",
+      "bytes": 2082714467,
+      "sha256": "9eaa45875b02f4538f3c542d1e8bfd67afe8cae9eb68dfe6b1ed9ef9c6a54fa4"
     },
     {
       "cid": "QmdrKDzyj1TW6AhtFwPKhkAczhCpjZ5Q7iBRisZPrqu9J8",
@@ -72,14 +72,14 @@
       "sha256": "f6555028e31f8b7a7a2ab99b3c39c5c6043b06c2051554f656ac11ae9fbbb415"
     },
     {
-      "cid": "QmYRXUx8Zk3FUTVXQt3DSLMfdCwtG5CDzfyZujUHc3Ktvn",
-      "bytes": 2000110016,
-      "sha256": "0d22e1173f29745f543a59ad7088b9354db3c5e263da130403b8f96157eb9faf"
+      "cid": "QmX9mDFfBw2XMW4zGkRRqQYP1QSymHE8CRRLwDu7mFjWsB",
+      "bytes": 2001284706,
+      "sha256": "9bb9cef0ad635973a7133ef1cec9789f418b3ab049220b8c637ff2c08d304520"
     },
     {
-      "cid": "QmPaSzJGU3J2b8iQPnf26tVKbvDwcbvnjLsyQbHbPRWb1F",
-      "bytes": 2001111779,
-      "sha256": "51623d23915c7abb21614cac8863d710e84296e2ff7445436792adbad442053c"
+      "cid": "QmXLLT6TunbfQNFwjzCqULEvD2Cf5Q2CzM9QbdYoJk6FzR",
+      "bytes": 2001337206,
+      "sha256": "dd1ab9b4bcb68164d427fd1c192ab48b6836c24eee59c25611ab696e75d881fe"
     },
     {
       "cid": "QmPxGPefq58bHQxLYFwNG1an2C7rRf9XPkivaPX4YusBKm",
@@ -87,13 +87,13 @@
       "sha256": "6171b6cb3cdaf59a5083420459311c65bbe0f1d5531155fe28a1c714cb45b8c8"
     },
     {
-      "cid": "QmPFk2a7jREKKR5Y98ToqYGTXfK8g8mkWfiY9eWMXLKGnw",
-      "bytes": 1773847076,
-      "sha256": "a734c5bd6f49feecc294ba6ba4351a66e86d0f63312a62625f024a56741c4c31"
+      "cid": "QmQWz1nT76Pg4R9HnwcBs28Uth3f3iemKdBfRUoCwFQoeJ",
+      "bytes": 1773457690,
+      "sha256": "6e7215e1bcdc40e879d99bcee5d74c425e1bbb201a37708eef288faa6adc705b"
     }
   ],
   "ipfs_hashes": [
-    "QmQu8LmNVtDtFsS4kQdvZnfDGPcmesvubd2PG4tzk1GXdD",
+    "QmbHJRavJP1fdiRL3gijNsoQ1TZV1mrVc5G7f4jvhn5rZE",
     "QmdrKDzyj1TW6AhtFwPKhkAczhCpjZ5Q7iBRisZPrqu9J8",
     "QmbG9mR87PP5PQ5TrEKU4DquBTjyg3aZ5dGaiwEno4QiV1",
     "QmXvrimG4mdbfg1MD3gnHKrfBxSQXze7pm8DNU9NKFuyB1",
@@ -106,10 +106,10 @@
     "QmcHiSjtdAvg61cay6w7UXyRFvdJxCUSvpiqRfdNJ5Eozw",
     "QmY9ntECb1HM2ywbFt2VqR3rTxVWYv38hHBRwsvuqMDwbG",
     "QmUybDUN1ykVVEEAL3qoX92UZhJrtntfHYSPXLk7HAznvA",
-    "QmYRXUx8Zk3FUTVXQt3DSLMfdCwtG5CDzfyZujUHc3Ktvn",
-    "QmPaSzJGU3J2b8iQPnf26tVKbvDwcbvnjLsyQbHbPRWb1F",
+    "QmX9mDFfBw2XMW4zGkRRqQYP1QSymHE8CRRLwDu7mFjWsB",
+    "QmXLLT6TunbfQNFwjzCqULEvD2Cf5Q2CzM9QbdYoJk6FzR",
     "QmPxGPefq58bHQxLYFwNG1an2C7rRf9XPkivaPX4YusBKm",
-    "QmPFk2a7jREKKR5Y98ToqYGTXfK8g8mkWfiY9eWMXLKGnw"
+    "QmQWz1nT76Pg4R9HnwcBs28Uth3f3iemKdBfRUoCwFQoeJ"
   ],
   "baseurl": "https://ipfs.io/ipfs/"
 }
