@@ -10,6 +10,11 @@ packing and the RPC port, stops the node, zips those folders into parts, adds
 each part to IPFS, and writes <CHAIN>/<CHAIN>-<network>.json - the file
 index.html lists and getchain.py downloads.
 
+Every run also releases the parts it pinned more than --retention-hours ago
+(5 days by default) and that nothing published still points at - in practice
+the final, always-changing part of each older run - so the IPFS repo does not
+grow without bound.  `./savechain.py RVN --prune-only` does just that step.
+
 Needs: a fully synced node with RPC enabled, and the `ipfs` command with a
 running daemon.  Everything else is the Python standard library.
 """
@@ -33,6 +38,7 @@ from urllib.request import Request, urlopen
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_PART_SIZE = 2_000_000_000  # ~2 GB parts keep a failed transfer cheap
 DEFAULT_GATEWAY = "https://ipfs.io/ipfs/"
+DEFAULT_RETENTION_HOURS = 120  # keep replaced parts pinned 5 days for anyone mid-download
 CHUNK = 1 << 20
 
 
@@ -271,6 +277,248 @@ def ipfs_add(binary, path):
     return cid
 
 
+def ipfs_unpin(binary, cid):
+    """Drop our pin on a CID. True once it is no longer pinned here."""
+    result = subprocess.run([binary, "pin", "rm", cid], capture_output=True, text=True)
+    if result.returncode == 0:
+        return True
+    message = ((result.stderr or "") + (result.stdout or "")).strip()
+    if "not pinned" in message.lower():
+        return True  # already released - nothing to do
+    log("  WARNING: ipfs pin rm %s failed: %s" % (cid, message))
+    return False
+
+
+def ipfs_gc(binary):
+    """Collect unpinned blocks. This is the step that actually frees the disk."""
+    result = subprocess.run([binary, "repo", "gc"], capture_output=True, text=True)
+    if result.returncode != 0:
+        log("  WARNING: ipfs repo gc failed: %s" % (result.stderr or "").strip())
+        return False
+    return True
+
+
+def ipfs_repo_size(binary):
+    """Bytes the local IPFS repo is using, or None if ipfs will not say."""
+    result = subprocess.run([binary, "repo", "stat", "--size-only"],
+                            capture_output=True, text=True)
+    if result.returncode != 0:
+        return None
+    for line in result.stdout.splitlines():
+        if line.strip().lower().startswith("reposize:"):
+            try:
+                return int(line.split(":", 1)[1].strip())
+            except ValueError:
+                return None
+    return None
+
+
+# --------------------------------------------------------------------------
+# pin ledger
+#
+# Each run pins the same early parts (identical block files, identical 2GB
+# cutoff, so identical CIDs) plus one new final part, because the chain has
+# grown.  Those final parts are what fill the disk, so remember every CID a run
+# pinned and release the ones that have aged out and that no published
+# metadata - ours or a newer run's - still refers to.
+# --------------------------------------------------------------------------
+
+def ledger_path(chain, mode):
+    return os.path.join(SCRIPT_DIR, chain, "%s-%s-pins.json" % (chain, mode))
+
+
+def load_ledger(chain, mode):
+    path = ledger_path(chain, mode)
+    if os.path.exists(path):
+        try:
+            with open(path) as handle:
+                data = json.load(handle)
+        except (OSError, ValueError) as exc:
+            log("  WARNING: pin ledger %s unreadable (%s) - starting a new one"
+                % (path, exc))
+            data = None
+        if isinstance(data, dict):
+            data.setdefault("runs", [])
+            data.setdefault("released", [])
+            return data
+    return {"chain": chain, "mode": mode, "runs": [], "released": []}
+
+
+def save_ledger(chain, mode, ledger):
+    path = ledger_path(chain, mode)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as handle:
+        json.dump(ledger, handle, indent=2)
+        handle.write("\n")
+    return path
+
+
+def utcnow():
+    return datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
+
+
+def iso(when):
+    return when.isoformat().replace("+00:00", "Z")
+
+
+def parse_iso(text):
+    if not text:
+        return None
+    try:
+        when = datetime.datetime.fromisoformat(str(text).replace("Z", "+00:00"))
+    except (ValueError, TypeError):
+        return None
+    return when if when.tzinfo else when.replace(tzinfo=datetime.timezone.utc)
+
+
+def record_run(ledger, parts, when):
+    """Remember what this run pinned, newest last."""
+    ledger.setdefault("runs", []).append({
+        "published": iso(when),
+        "parts": [{"cid": p["cid"], "bytes": p["bytes"]} for p in parts],
+    })
+
+
+def published_cids(chain, mode):
+    """CIDs the metadata on disk still points at - never release these."""
+    path = os.path.join(SCRIPT_DIR, chain, "%s-%s.json" % (chain, mode))
+    try:
+        with open(path) as handle:
+            data = json.load(handle)
+    except (OSError, ValueError):
+        return set()
+    cids = {part.get("cid") for part in data.get("parts") or [] if part.get("cid")}
+    cids.update(cid for cid in data.get("ipfs_hashes") or [] if cid)
+    return cids
+
+
+def ledger_cids(ledger):
+    cids = {part.get("cid") for run in ledger.get("runs") or []
+            for part in run.get("parts") or []}
+    cids.update(entry.get("cid") for entry in ledger.get("released") or [])
+    cids.discard(None)
+    return cids
+
+
+def adopt_git_history(chain, mode, ledger):
+    """Seed the ledger from runs published before it existed.
+
+    Every past run committed its CIDs in <CHAIN>/<CHAIN>-<mode>.json, so git
+    history is an accurate record of what this node pinned and when.  Needed
+    once, to clean up final parts that predate the ledger.
+    """
+    rel = "%s/%s-%s.json" % (chain, chain, mode)
+    try:
+        listing = subprocess.run(["git", "log", "--format=%H %cI", "--", rel],
+                                 cwd=SCRIPT_DIR, capture_output=True, text=True)
+    except OSError as exc:
+        log("  WARNING: cannot run git (%s) - nothing adopted" % exc)
+        return 0
+    if listing.returncode != 0:
+        log("  WARNING: git log failed: %s" % (listing.stderr or "").strip())
+        return 0
+
+    known = ledger_cids(ledger)
+    adopted = []
+    for line in listing.stdout.splitlines():
+        rev, _, when = line.strip().partition(" ")
+        if not rev or not parse_iso(when):
+            continue
+        show = subprocess.run(["git", "show", "%s:%s" % (rev, rel)],
+                              cwd=SCRIPT_DIR, capture_output=True, text=True)
+        if show.returncode != 0:
+            continue
+        try:
+            data = json.loads(show.stdout)
+        except ValueError:
+            continue
+        parts = [{"cid": part.get("cid"), "bytes": part.get("bytes")}
+                 for part in data.get("parts") or [] if part.get("cid")]
+        parts = [part for part in parts if part["cid"] not in known]
+        if not parts:
+            continue
+        known.update(part["cid"] for part in parts)
+        adopted.append({"published": iso(parse_iso(when)), "parts": parts})
+
+    if not adopted:
+        log("  git history holds no pins the ledger is missing")
+        return 0
+    # git log is newest first; the ledger reads oldest first.
+    ledger.setdefault("runs", [])[:0] = list(reversed(adopted))
+    ledger["runs"].sort(key=lambda run: run.get("published") or "")
+    count = sum(len(run["parts"]) for run in adopted)
+    log("  adopted %d part%s from %d past commit%s"
+        % (count, "" if count == 1 else "s",
+           len(adopted), "" if len(adopted) == 1 else "s"))
+    return count
+
+
+def prune_pins(binary, chain, mode, ledger, retention_hours, now, do_gc=True,
+               dry=False):
+    """Unpin parts older than the window that nothing published still needs."""
+    cutoff = now - datetime.timedelta(hours=retention_hours)
+    fresh, expired = [], []
+    for run in ledger.get("runs", []):
+        when = parse_iso(run.get("published"))
+        (expired if when and when <= cutoff else fresh).append(run)
+    ledger["runs"] = fresh
+
+    if not expired:
+        log("  nothing pinned here is older than %d hours" % retention_hours)
+        return 0
+
+    # Anything a newer run pinned, or that the current metadata lists, stays -
+    # that is how the unchanged early parts survive their own run ageing out.
+    protected = published_cids(chain, mode)
+    for run in fresh:
+        protected.update(part.get("cid") for part in run.get("parts") or [])
+
+    stale, seen = [], set()
+    for run in expired:
+        for part in run.get("parts") or []:
+            cid = part.get("cid")
+            if cid and cid not in protected and cid not in seen:
+                seen.add(cid)
+                stale.append({"cid": cid, "bytes": part.get("bytes"),
+                              "published": run.get("published")})
+
+    if not stale:
+        log("  %d run%s aged out, every part is still in use - nothing to release"
+            % (len(expired), "" if len(expired) == 1 else "s"))
+        return 0
+
+    released = 0
+    for entry in stale:
+        log("  %s %s  %s  (pinned %s)"
+            % ("would unpin" if dry else "unpin", entry["cid"],
+               human(entry["bytes"]), entry["published"]))
+        if dry:
+            released += 1
+            continue
+        if not ipfs_unpin(binary, entry["cid"]):
+            # Keep it on the books so the next run tries again.
+            ledger["runs"].insert(0, {"published": entry["published"],
+                                      "parts": [{"cid": entry["cid"],
+                                                 "bytes": entry["bytes"]}]})
+            continue
+        released += 1
+        ledger.setdefault("released", []).append(
+            {"cid": entry["cid"], "bytes": entry["bytes"],
+             "published": entry["published"], "released": iso(now)})
+    ledger["released"] = ledger["released"][-100:]
+
+    if released and do_gc and not dry:
+        before = ipfs_repo_size(binary)
+        log("  %d part%s unpinned - running ipfs repo gc"
+            % (released, "" if released == 1 else "s"))
+        if ipfs_gc(binary):
+            after = ipfs_repo_size(binary)
+            if before is not None and after is not None:
+                log("  repo %s -> %s (freed %s)"
+                    % (human(before), human(after), human(max(before - after, 0))))
+    return released
+
+
 # --------------------------------------------------------------------------
 # main
 # --------------------------------------------------------------------------
@@ -318,6 +566,18 @@ def parse_args(argv):
     parser.add_argument("--no-stop", action="store_true",
                         help="do not stop the node (only safe if it is already stopped)")
     parser.add_argument("--keep-zips", action="store_true", help="keep the zip parts")
+    parser.add_argument("--retention-hours", type=float, default=DEFAULT_RETENTION_HOURS,
+                        help="how long a replaced part stays pinned (default %d)"
+                             % DEFAULT_RETENTION_HOURS)
+    parser.add_argument("--no-prune", action="store_true",
+                        help="do not release parts that have aged out")
+    parser.add_argument("--no-gc", action="store_true",
+                        help="unpin aged-out parts but skip `ipfs repo gc`")
+    parser.add_argument("--prune-only", action="store_true",
+                        help="only release aged-out parts, publish nothing")
+    parser.add_argument("--adopt-history", action="store_true",
+                        help="seed the pin ledger from past commits of the metadata "
+                             "file, to clean up runs published before it existed")
     parser.add_argument("--dry-run", action="store_true",
                         help="report what would be packed and exit")
     return parser.parse_args(argv)
@@ -329,6 +589,21 @@ def main(argv=None):
     mode = ("testnet" if args.testnet else
             "regtest" if args.regtest else
             args.network or "mainnet")
+
+    if args.prune_only:
+        log("%s  %s %s  releasing parts older than %g hours"
+            % (stamp(), chain, mode, args.retention_hours))
+        binary = ipfs_binary(args.ipfs)
+        ledger = load_ledger(chain, mode)
+        if args.adopt_history:
+            adopt_git_history(chain, mode, ledger)
+        prune_pins(binary, chain, mode, ledger, args.retention_hours, utcnow(),
+                   do_gc=not args.no_gc, dry=args.dry_run)
+        if args.dry_run:
+            log("\nDry run - nothing unpinned.")
+        else:
+            save_ledger(chain, mode, ledger)
+        return 0
 
     config = load_config(chain)
     base_dir = resolve_datadir(config, mode, args.datadir)
@@ -369,6 +644,20 @@ def main(argv=None):
         log("\nDry run - nothing packed.")
         return 0
 
+    binary = ipfs_binary(args.ipfs)
+    ledger = load_ledger(chain, mode)
+    if args.adopt_history:
+        adopt_git_history(chain, mode, ledger)
+
+    # Release aged-out parts first: it frees disk before the new zips are built,
+    # and it happens while the node is still up, so downtime stays short.
+    if not args.no_prune:
+        log("\n%s  Releasing parts older than %g hours..."
+            % (stamp(), args.retention_hours))
+        prune_pins(binary, chain, mode, ledger, args.retention_hours, utcnow(),
+                   do_gc=not args.no_gc)
+        save_ledger(chain, mode, ledger)
+
     if not args.no_stop:
         log("\n%s  Stopping the node..." % stamp())
         try:
@@ -388,12 +677,15 @@ def main(argv=None):
     os.makedirs(args.outdir, exist_ok=True)
     parts = build_parts(chain, mode, net_dir, files, args.outdir, args.part_size)
 
-    binary = ipfs_binary(args.ipfs)
     log("\n%s  Adding to IPFS..." % stamp())
     for i, part in enumerate(parts, 1):
         part["sha256"] = sha256_of(part["path"])
         part["cid"] = ipfs_add(binary, part["path"])
         log("  [%d/%d] %s  %s" % (i, len(parts), part["cid"], human(part["bytes"])))
+
+    # Book the pins before anything else can fail, so none are ever orphaned.
+    record_run(ledger, parts, utcnow())
+    save_ledger(chain, mode, ledger)
 
     path = write_metadata(chain, mode, info, parts, args.gateway)
     log("\n%s  Wrote %s" % (stamp(), path))
