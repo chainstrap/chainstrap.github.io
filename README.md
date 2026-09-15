@@ -87,6 +87,36 @@ git commit -am 'Update chain' && git push
 come from `CHAINSTRAP_RPC_USER` / `CHAINSTRAP_RPC_PASSWORD`, else the chain's `.conf`, else the
 `.cookie` file the node writes — no credentials live in this repo.
 
+### Releasing old parts
+
+Every run repacks the chain the same way, so all but the last part come out byte-identical and keep
+the CIDs they already had. Only the final part changes, because the chain grew — and a new final
+part every day is what eventually fills the publishing node's disk.
+
+So each run records the CIDs it pinned in `<CODE>/<CODE>-<network>-pins.json` (local to that node,
+not committed) and then releases parts that are both older than `--retention-hours` (120 by default,
+five days — long enough for anyone who started from a four-day-old snapshot to finish) and not
+listed in the current `<CODE>/<CODE>-<network>.json`. Releasing means `ipfs pin rm` followed by
+`ipfs repo gc`, which is the step that actually gives the disk space back. Parts still in use are
+never touched, and if the daemon is down the CID stays on the books and is retried next run.
+
+Pruning happens before the new zips are built, so the space is free when it is needed.
+
+```
+./savechain.py RVN --prune-only --dry-run    # what would be released, and when it was pinned
+./savechain.py RVN --prune-only              # release now, without publishing
+./savechain.py RVN --no-prune                # publish, keep everything pinned
+./savechain.py RVN --retention-hours 240     # hold replaced parts for 10 days instead
+```
+
+On a node that has been publishing since before the ledger existed, seed it once from the commits
+of the metadata file — each one records exactly what that run pinned, and when:
+
+```
+./savechain.py RVN --prune-only --adopt-history --dry-run
+./savechain.py RVN --prune-only --adopt-history
+```
+
 See [scripts/README.md](scripts/README.md) for running it daily from cron.
 
 ## Adding a chain
@@ -109,3 +139,4 @@ The website reads those same files, so a new chain appears on
 | `savechain.py` | Publisher script: pack a synced chain and add it to IPFS |
 | `<CODE>/<CODE>-config.json` | Per-chain paths, folders and ports |
 | `<CODE>/<CODE>-<network>.json` | Snapshot metadata: height, parts, CIDs, checksums |
+| `<CODE>/<CODE>-<network>-pins.json` | Local pin ledger: what this node pinned and when (not committed) |
